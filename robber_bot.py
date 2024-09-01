@@ -9,6 +9,7 @@ from aiogram import Router
 from telethon.errors import FloodWaitError
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from telethon.tl.types import MessageEntityUrl, MessageEntityTextUrl
 from telethon.tl.types import (
     MessageMediaPhoto,
     MessageMediaDocument,
@@ -341,6 +342,12 @@ async def handler(event):
     message = event.message
     current_time = datetime.now(timezone.utc)
 
+    # Проверяем, содержит ли сообщение ссылку
+    contains_link = any(
+        isinstance(entity, (MessageEntityUrl, MessageEntityTextUrl))
+        for entity in message.entities or []
+    )
+
     if message.grouped_id:
         group_data = grouped_messages[message.grouped_id]
         group_data["messages"].append(message)
@@ -352,7 +359,7 @@ async def handler(event):
         task = asyncio.create_task(handle_media_group_timeout(message.grouped_id))
         media_group_tasks[message.grouped_id] = task
 
-    elif message.media:
+    elif message.media and not contains_link:
         print(f"Обнаружено медиа: {message.media}")
 
         if isinstance(
@@ -363,14 +370,13 @@ async def handler(event):
         else:
             await download_media_and_send(message, message.media, message.raw_text)
 
-    elif message.raw_text:
+    elif message.raw_text or contains_link:
         await send_message_with_retries(
             client,
             target_channel_id,
             message.raw_text,
             parse_mode="html",
         )
-
 
 async def main():
     # Подключаем роутер бота и запускаем polling
