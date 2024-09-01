@@ -15,7 +15,6 @@ from telethon.tl.types import (
     DocumentAttributeVideo,
 )
 
-
 # Конфигурация
 api_id = "25330009"  # Ваш API ID
 api_hash = "5e96e4d16e421a3961b7caef5f0ccb96"  # Ваш API Hash
@@ -109,7 +108,12 @@ async def download_and_send_as_circle(message, media):
         try:
             await client.download_media(media, file_path)
             if os.path.exists(file_path):
-                await send_video_note_as_circle(client, target_channel_id, file_path)
+                await send_video_note_as_circle(
+                    client,
+                    target_channel_id,
+                    file_path,
+                    caption=message.raw_text[:MAX_CAPTION_LENGTH],
+                )
             else:
                 print(f"Файл {file_path} не существует, пропуск отправки.")
         except Exception as e:
@@ -148,9 +152,12 @@ async def download_media_and_send(message, media, text):
 
             # Проверяем, что файл существует перед отправкой
             if os.path.exists(file_path):
-                # Отправка медиафайла
+                # Обрезаем текст, чтобы он не превышал допустимую длину
+                caption = text[:MAX_CAPTION_LENGTH]
+
+                # Отправка медиафайла с текстом
                 await send_file_with_retries(
-                    client, target_channel_id, file_path, caption=text
+                    client, target_channel_id, file_path, caption=caption
                 )
                 print(f"Медиа отправлено: {file_path}")
             else:
@@ -290,7 +297,7 @@ async def process_media_group(group_id):
             captions.append(msg.raw_text)
 
     # Соединяем все тексты
-    caption = "\n".join(captions)
+    caption = "\n".join(captions)[:MAX_CAPTION_LENGTH]
 
     if media_files:
         try:
