@@ -17,21 +17,19 @@ from telethon.tl.types import (
 )
 
 # Конфигурация
-api_id = "25330009"  # Ваш API ID
-api_hash = "5e96e4d16e421a3961b7caef5f0ccb96"  # Ваш API Hash
-BOT_TOKEN = "7280058903:AAGJZkeoNsHjlwRACHAXTBTZppPSXLkl1lM"  # Токен вашего бота
-session_name = "MyClientSession"  # Имя сессии для клиента
+api_id = "Ваш API ID"  
+api_hash = "Ваш API Hash"  
+BOT_TOKEN = "Токен вашего бота"  
+session_name = "Имя сессии для клиента"  
 
 # ID вашего канала для публикации
-target_channel_id = "@adkadkdc"  # Замените на ID вашего канала
+target_channel_id = "@Замените на ID вашего канала" 
 
 # Список каналов для получения сообщений
 source_channel_usernames = [
-    "@WalkerAmongTheStars",
     "@why4ch",
     "@dvachannel",
     "@ru2ch",
-    "@dfasdfasa",
 ]
 
 # Инициализация бота и клиента
